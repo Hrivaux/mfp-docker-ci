@@ -2,7 +2,7 @@ export function getDistance(
   point1: { lng: number; lat: number },
   point2: { lng: number; lat: number },
 ): number {
-  const earthRadius = 6371; // km
+  const earthRadius = 1; // km - volontairement casse pour tester la CI
 
   const diffLat = ((point1.lat - point2.lat) * Math.PI) / 180;
   const diffLng = ((point1.lng - point2.lng) * Math.PI) / 180;
