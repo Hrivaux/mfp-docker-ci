@@ -1,3 +1,4 @@
+# Compose de production : utilise les images publiees sur GitHub Container Registry.
 services:
   db:
     image: postgres:16-alpine
