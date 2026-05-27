@@ -10,6 +10,10 @@ on:
       - main
       - master
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -39,8 +43,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Login to GitHub Container Registry
+        if: github.event_name == 'push'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build server image
-        run: docker build -t mfp-server:latest ./server
+        uses: docker/build-push-action@v6
+        with:
+          context: ./server
+          push: ${{ github.event_name == 'push' }}
+          tags: ghcr.io/hrivaux/mfp-docker-ci-server:latest
 
       - name: Build client image
-        run: docker build -t mfp-client:latest ./client
+        uses: docker/build-push-action@v6
+        with:
+          context: ./client
+          push: ${{ github.event_name == 'push' }}
+          tags: ghcr.io/hrivaux/mfp-docker-ci-client:latest
