@@ -1,0 +1,35 @@
+FROM node:22-alpine AS deps
+
+WORKDIR /app
+
+RUN apk add --no-cache python3 make g++
+
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile
+
+FROM deps AS build
+
+COPY tsconfig.json ./
+COPY src ./src
+RUN yarn build
+
+FROM node:22-alpine AS production-deps
+
+WORKDIR /app
+
+RUN apk add --no-cache python3 make g++
+
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile --production && yarn cache clean
+
+FROM node:22-alpine AS production
+
+WORKDIR /app
+ENV NODE_ENV=production
+
+COPY --from=production-deps /app/node_modules ./node_modules
+COPY --from=build /app/dist ./dist
+COPY package.json ./
+
+EXPOSE 3000
+CMD ["yarn", "start"]
