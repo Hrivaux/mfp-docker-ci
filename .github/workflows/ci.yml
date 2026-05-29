@@ -56,11 +56,15 @@ jobs:
         with:
           context: ./server
           push: ${{ github.event_name == 'push' }}
-          tags: ghcr.io/hrivaux/mfp-docker-ci-server:latest
+          tags: |
+            ghcr.io/hrivaux/mfp-docker-ci-server:latest
+            ghcr.io/hrivaux/mfp-docker-ci-server:${{ github.ref_name }}
 
       - name: Build client image
         uses: docker/build-push-action@v6
         with:
           context: ./client
           push: ${{ github.event_name == 'push' }}
-          tags: ghcr.io/hrivaux/mfp-docker-ci-client:latest
+          tags: |
+            ghcr.io/hrivaux/mfp-docker-ci-client:latest
+            ghcr.io/hrivaux/mfp-docker-ci-client:${{ github.ref_name }}
